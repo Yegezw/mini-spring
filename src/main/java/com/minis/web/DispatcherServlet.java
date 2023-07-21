@@ -1,20 +1,21 @@
 package com.minis.web;
 
-import com.minis.core.ClassPathXmlResource;
-import com.minis.core.Resource;
-import com.minis.web.config.MappingValue;
-import com.minis.web.config.XmlConfigReader;
+import com.minis.web.config.RequestMapping;
+import com.minis.web.config.XmlScanComponentHelper;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,72 +23,166 @@ import java.util.Map;
  */
 public class DispatcherServlet extends HttpServlet {
 
-    private Map<String, MappingValue> mappingValues;
-    private Map<String, Class<?>> mappingClazz = new HashMap<>();
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * Controller 配置文件路径
+     */
+    private String contextConfigLocation;
+    /**
+     * 需要扫描的 package 列表
+     */
+    private List<String> packageNames = new ArrayList<>();
+
+
+    /**
+     * Controller 名称列表(类路径名)
+     */
+    private List<String> controllerNames = new ArrayList<>();
+    /**
+     * Controller 名称与对象的映射关系
+     */
+    private Map<String, Object> controllerObjs = new HashMap<>();
+    /**
+     * Controller 名称与类的映射关系
+     */
+    private Map<String, Class<?>> controllerClazzes = new HashMap<>();
+
+    /**
+     * &#064;RequestMapping 名称列表(URL)
+     */
+    private List<String> urlMappingNames = new ArrayList<>();
+    /**
+     * URL 名称与对象(Controller)的映射关系
+     */
     private Map<String, Object> mappingObjs = new HashMap<>();
+    /**
+     * URL 名称与类(Controller)的映射关系
+     */
+    private Map<String, Method> mappingMethods = new HashMap<>();
 
     public DispatcherServlet() {
         System.out.println("DispatcherServlet 实例化完成");
     }
 
     /**
-     * <p>根据 ServletConfig 获取 contextConfigLocation 路径(/WEB-INF/minisMVC-servlet.xml)
-     * <p>根据路径创建 Resource
-     * <p>利用 XmlConfigReader, 从 Resource 中解析 MappingValue 放入 mappingValues
+     * <p>通过 ServletConfig 获取 contextConfigLocation 路径(/WEB-INF/minisMVC-servlet.xml)
+     * <p>读取配置文件, 获得 Controller 所在包
      * <p>调用 refresh()
      */
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
 
-        String contextConfigLocation = config.getInitParameter("contextConfigLocation");
+        contextConfigLocation = config.getInitParameter("contextConfigLocation");
         URL xmlPath;
         try {
             xmlPath = super.getServletContext().getResource(contextConfigLocation);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
-
-        Resource resource = new ClassPathXmlResource(xmlPath);
-        XmlConfigReader reader = new XmlConfigReader();
-        mappingValues = reader.loadConfig(resource);
+        packageNames = XmlScanComponentHelper.getNodeValue(xmlPath);
 
         refresh();
         System.out.println("DispatcherServlet 初始化完成");
     }
 
     /**
-     * 读取 mappingValues 中的 Bean 定义, 加载类, 创建实例
+     * <p>加载所有 Controller 类, 并进行实例化
+     * <p>扫描所有 Controller 类中, 被 @RequestMapping 标注的方法, 并进行映射
+     * <p>URL -> Controller + Method
      */
     protected void refresh() {
-        for (Map.Entry<String, MappingValue> entry : mappingValues.entrySet()) {
-            String id = entry.getKey();
-            String className = entry.getValue().clazz;
+        initController();
+        initMapping();
+    }
+
+    /**
+     * 初始化 Controller: 加载所有 Controller 类, 并进行实例化
+     */
+    protected void initController() {
+        controllerNames = scanPackages(packageNames);
+
+        for (String controllerName : controllerNames) {
             Class<?> clazz = null;
-            Object obj = null;
+            Object obj;
+
             try {
-                clazz = Class.forName(className);
-                obj = clazz.newInstance();
-            } catch (Exception e) {
+                clazz = Class.forName(controllerName);
+                controllerClazzes.put(controllerName, clazz);
+            } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
 
-            mappingClazz.put(id, clazz);
-            mappingObjs.put(id, obj);
+            try {
+                obj = clazz.newInstance();
+                controllerObjs.put(controllerName, obj);
+            } catch (InstantiationException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
         }
+    }
+
+    /**
+     * <p>初始化 URL 映射: 扫描所有 Controller 类中, 被 &#064;RequestMapping 标注的方法, 并进行映射
+     * <p>URL -> Controller + Method
+     */
+    protected void initMapping() {
+        for (String controllerName : controllerNames) {
+            Class<?> clazz = controllerClazzes.get(controllerName);
+            Object obj = controllerObjs.get(controllerName);
+
+            Method[] methods = clazz.getDeclaredMethods();
+            for (Method method : methods) {
+                boolean isRequestMapping = method.isAnnotationPresent(RequestMapping.class);
+                if (isRequestMapping) {
+                    String urlMapping = method.getAnnotation(RequestMapping.class).value();
+                    urlMappingNames.add(urlMapping);
+                    mappingObjs.put(urlMapping, obj);
+                    mappingMethods.put(urlMapping, method);
+                }
+            }
+        }
+    }
+
+    private List<String> scanPackages(List<String> packages) {
+        List<String> controllerNames = new ArrayList<>();
+
+        for (String packageName : packages) {
+            controllerNames.addAll(scanPackage(packageName));
+        }
+
+        return controllerNames;
+    }
+
+    @SuppressWarnings("all")
+    private List<String> scanPackage(String packageName) {
+        List<String> controllerNames = new ArrayList<>();
+
+        // 将以 . 分割的包名, 换成以 / 分割的 URL
+        URL url = this.getClass().getClassLoader().getResource("/" + packageName.replaceAll("\\.", "/"));
+        File dir = new File(url.getFile());
+        for (File file : dir.listFiles()) {
+            if (file.isDirectory()) scanPackage(packageName + "." + file.getName());
+            else {
+                String controllerName = packageName + "." + file.getName().replace(".class", "");
+                controllerNames.add(controllerName);
+            }
+        }
+
+        return controllerNames;
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String path = req.getServletPath();
-        if (mappingValues.get(path) == null) return;
+        System.out.println(path);
+        if (!urlMappingNames.contains(path)) return;
 
-        Class<?> clazz = mappingClazz.get(path);
         Object obj = mappingObjs.get(path);
-        String methodName = mappingValues.get(path).method;
+        Method method = mappingMethods.get(path);
         Object result = null;
         try {
-            Method method = clazz.getMethod(methodName);
             result = method.invoke(obj);
         } catch (Exception e) {
             e.printStackTrace();

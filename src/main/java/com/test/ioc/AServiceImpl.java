@@ -1,4 +1,4 @@
-package com.test;
+package com.test.ioc;
 
 public class AServiceImpl implements AService {
 

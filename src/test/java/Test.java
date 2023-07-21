@@ -1,5 +1,5 @@
 import com.minis.context.ClassPathXmlApplicationContext;
-import com.test.AService;
+import com.test.ioc.AService;
 
 public class Test {
 

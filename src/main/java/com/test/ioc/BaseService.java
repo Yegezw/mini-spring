@@ -1,4 +1,4 @@
-package com.test;
+package com.test.ioc;
 
 import com.minis.beans.factory.annotation.Autowired;
 

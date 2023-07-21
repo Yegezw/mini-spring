@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <beans>
 
-    <bean id="baseBaseService" class="com.test.BaseBaseService" init-method="init">
-        <property type="com.test.AService" name="aService" ref="aService"/>
+    <bean id="baseBaseService" class="com.test.ioc.BaseBaseService" init-method="init">
+        <property type="com.test.ioc.AService" name="aService" ref="aService"/>
     </bean>
 
-    <bean id="aService" class="com.test.AServiceImpl">
+    <bean id="aService" class="com.test.ioc.AServiceImpl">
         <constructor-arg type="String" name="name" value="abc"/>
         <constructor-arg type="int" name="level" value="3"/>
         <property type="String" name="property1" value="Someone says"/>
         <property type="String" name="property2" value="Hello World!"/>
-        <property type="com.test.BaseService" name="baseService" ref="baseService"/>
+        <property type="com.test.ioc.BaseService" name="baseService" ref="baseService"/>
     </bean>
 
-    <bean id="baseService" class="com.test.BaseService" init-method="init">
-<!--        <property type="com.test.BaseBaseService" name="bbs" ref="baseBaseService"/>-->
+    <bean id="baseService" class="com.test.ioc.BaseService" init-method="init">
+<!--        <property type="com.test.ioc.BaseBaseService" name="bbs" ref="baseBaseService"/>-->
     </bean>
 
 </beans>
