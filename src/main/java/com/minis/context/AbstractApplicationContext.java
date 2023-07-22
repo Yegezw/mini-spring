@@ -29,6 +29,8 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
      */
     @Override
     public void refresh() throws BeansException, IllegalStateException {
+        System.out.println("AbstractApplicationContext.refresh() 开始执行");
+
         postProcessBeanFactory(getBeanFactory());
 
         registerBeanPostProcessors(getBeanFactory());
@@ -40,6 +42,8 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
         registerListeners();
 
         finishRefresh();
+
+        System.out.println("AbstractApplicationContext.refresh() 执行完毕");
     }
 
     /**

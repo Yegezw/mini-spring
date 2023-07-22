@@ -30,6 +30,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
     }
 
     public void refresh() {
+        System.out.println("AbstractBeanFactory.refresh() 开始执行");
         for (String beanName : beanDefinitionNames) {
             try {
                 getBean(beanName);
@@ -37,6 +38,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
                 e.printStackTrace();
             }
         }
+        System.out.println("AbstractBeanFactory.refresh() 执行完毕");
     }
 
     @Override

@@ -1,7 +1,10 @@
 package com.minis.web;
 
+import com.minis.beans.BeansException;
+import com.minis.beans.factory.annotation.Autowired;
 import com.minis.web.config.RequestMapping;
 import com.minis.web.config.XmlScanComponentHelper;
+import com.minis.web.context.WebApplicationContext;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -10,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -24,6 +28,10 @@ import java.util.Map;
 public class DispatcherServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
+    /**
+     * Web 应用上下文
+     */
+    private WebApplicationContext webApplicationContext;
 
     /**
      * Controller 配置文件路径
@@ -66,6 +74,7 @@ public class DispatcherServlet extends HttpServlet {
     }
 
     /**
+     * <p>从 ServletContext 中获取: Listener 启动时注册好的 WebApplicationContext
      * <p>通过 ServletConfig 获取 contextConfigLocation 路径(/WEB-INF/minisMVC-servlet.xml)
      * <p>读取配置文件, 获得 Controller 所在包
      * <p>调用 refresh()
@@ -73,6 +82,8 @@ public class DispatcherServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
+        webApplicationContext = (WebApplicationContext) super.getServletContext().
+                getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
 
         contextConfigLocation = config.getInitParameter("contextConfigLocation");
         URL xmlPath;
@@ -116,8 +127,9 @@ public class DispatcherServlet extends HttpServlet {
 
             try {
                 obj = clazz.newInstance();
+                populateBean(obj);
                 controllerObjs.put(controllerName, obj);
-            } catch (InstantiationException | IllegalAccessException e) {
+            } catch (InstantiationException | IllegalAccessException | BeansException e) {
                 e.printStackTrace();
             }
         }
@@ -140,6 +152,29 @@ public class DispatcherServlet extends HttpServlet {
                     urlMappingNames.add(urlMapping);
                     mappingObjs.put(urlMapping, obj);
                     mappingMethods.put(urlMapping, method);
+                }
+            }
+        }
+    }
+
+    /**
+     * 填充 Bean
+     */
+    protected void populateBean(Object bean) throws BeansException {
+        Class<?> clazz = bean.getClass();
+        Field[] fields = clazz.getDeclaredFields();
+
+        for (Field field : fields) {
+            boolean isAutowired = field.isAnnotationPresent(Autowired.class);
+            if (isAutowired) {
+                String fieldName = field.getName();
+                Object autowiredObj = webApplicationContext.getBean(fieldName); // fieldName 需要和依赖的 beanName 一致
+                try {
+                    field.setAccessible(true);     // 暴力反射
+                    field.set(bean, autowiredObj); // 注入属性
+                    System.out.println("autowire " + fieldName + " for bean " + clazz.getSimpleName());
+                } catch (IllegalArgumentException | IllegalAccessException e) {
+                    e.printStackTrace();
                 }
             }
         }
@@ -176,7 +211,7 @@ public class DispatcherServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String path = req.getServletPath();
-        System.out.println(path);
+        // System.out.println(path);
         if (!urlMappingNames.contains(path)) return;
 
         Object obj = mappingObjs.get(path);
