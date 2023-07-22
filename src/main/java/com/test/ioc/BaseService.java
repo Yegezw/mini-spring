@@ -11,11 +11,11 @@ public class BaseService {
     }
 
     public void init() {
-        System.out.print("Base Service init method.");
+        System.out.println("Base Service init method.");
     }
 
     public void sayHello() {
-        System.out.print("Base Service says hello");
+        System.out.println("Base Service says hello");
         baseBaseService.sayHello();
     }
 

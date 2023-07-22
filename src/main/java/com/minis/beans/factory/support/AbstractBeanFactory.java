@@ -30,9 +30,11 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
     }
 
     public void refresh() {
-        System.out.println("AbstractBeanFactory.refresh() 开始执行");
+        System.out.println("AbstractBeanFactory.refresh() 开始执行\n");
         for (String beanName : beanDefinitionNames) {
             try {
+                // 注意: 若子类重写了 getBean(), 会进入子类的 getBean()
+                // 比如 DefaultListableBeanFactory.getBean()
                 getBean(beanName);
             } catch (BeansException e) {
                 e.printStackTrace();
@@ -85,6 +87,8 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
      */
     @Override
     public Object getBean(String beanName) throws BeansException {
+        System.out.println(String.format("AbstractBeanFactory.getBean(%s) called", beanName));
+
         Object singleton = super.getSingleton(beanName);
 
         if (singleton == null) {
@@ -94,6 +98,11 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
                 System.out.println("get bean null: " + beanName);
 
                 BeanDefinition beanDefinition = beanDefinitionMap.get(beanName);
+                if (beanDefinition == null) {
+                    System.out.println(beanName + " 没有 BeanDefinition, 此方法将会返回 null");
+                    return null;
+                }
+
                 singleton = createBean(beanDefinition);
                 registerBean(beanName, singleton);
 
@@ -162,7 +171,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 
             // 处理构造器参数
             ConstructorArgumentValues argumentValues = beanDefinition.constructorArgumentValues;
-            if (!argumentValues.isEmpty()) {
+            if (argumentValues != null && !argumentValues.isEmpty()) {
                 Class<?>[] paramTypes = new Class<?>[argumentValues.getArgumentCount()]; // 参数类型数组
                 Object[] paramValues = new Object[argumentValues.getArgumentCount()];    // 参数值数组
 
@@ -199,7 +208,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
             e.printStackTrace();
         }
 
-        System.out.println(beanDefinition.id + " bean created.");
+        System.out.println(beanDefinition.id + " bean created");
 
         return obj;
     }
@@ -219,7 +228,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
         System.out.println("handle properties for bean: " + beanDefinition.id + "\n");
 
         PropertyValues propertyValues = beanDefinition.propertyValues;
-        if (!propertyValues.isEmpty()) {
+        if (propertyValues != null && !propertyValues.isEmpty()) {
             for (int i = 0; i < propertyValues.size(); i++) {
                 PropertyValue propertyValue = propertyValues.getPropertyValueList().get(i);
                 String type = propertyValue.type;

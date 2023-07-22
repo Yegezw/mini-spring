@@ -13,7 +13,7 @@ import com.minis.core.Resource;
  */
 public class ClassPathXmlApplicationContext extends AbstractApplicationContext {
 
-    DefaultListableBeanFactory beanFactory;
+    private DefaultListableBeanFactory beanFactory;
 
     public ClassPathXmlApplicationContext(String fileName) {
         this(fileName, true);
@@ -50,33 +50,33 @@ public class ClassPathXmlApplicationContext extends AbstractApplicationContext {
     }
 
     @Override
-    void postProcessBeanFactory(ConfigurableListableBeanFactory bf) {
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory bf) {
     }
 
     @Override
-    void registerBeanPostProcessors(ConfigurableListableBeanFactory bf) {
+    public void registerBeanPostProcessors(ConfigurableListableBeanFactory bf) {
         beanFactory.addBeanPostProcessor(new AutowiredAnnotationBeanPostProcessor());
     }
 
     @Override
-    void initApplicationEventPublisher() {
+    public void initApplicationEventPublisher() {
         ApplicationEventPublisher aep = new SimpleApplicationEventPublisher();
         super.setApplicationEventPublisher(aep);
     }
 
     @Override
-    void onRefresh() {
+    public void onRefresh() {
         beanFactory.refresh();
     }
 
     @Override
-    void registerListeners() {
+    public void registerListeners() {
         ApplicationListener listener = new ApplicationListener();
         super.getApplicationEventPublisher().addApplicationListener(listener);
     }
 
     @Override
-    void finishRefresh() {
+    public void finishRefresh() {
         publishEvent(new ContextRefreshEvent("Context Refreshed ..."));
     }
 

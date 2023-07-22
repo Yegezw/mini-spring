@@ -43,38 +43,38 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
 
         finishRefresh();
 
-        System.out.println("AbstractApplicationContext.refresh() 执行完毕");
+        System.out.println("AbstractApplicationContext.refresh() 执行完毕\n");
     }
 
     /**
      * 后置通知 BeanFactory
      */
-    abstract void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory);
+    public abstract void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory);
 
     /**
      * 注册 BeanPostProcessor
      */
-    abstract void registerBeanPostProcessors(ConfigurableListableBeanFactory beanFactory);
+    public abstract void registerBeanPostProcessors(ConfigurableListableBeanFactory beanFactory);
 
     /**
      * 初始化应用事件发布者(被观察者)
      */
-    abstract void initApplicationEventPublisher();
+    public abstract void initApplicationEventPublisher();
 
     /**
      * 注册监听器(观察者)
      */
-    abstract void registerListeners();
+    public abstract void registerListeners();
 
     /**
      * 在刷新
      */
-    abstract void onRefresh();
+    public abstract void onRefresh();
 
     /**
      * 结束刷新
      */
-    abstract void finishRefresh();
+    public abstract void finishRefresh();
 
     // ========================================= ApplicationContext ========================================= //
 
