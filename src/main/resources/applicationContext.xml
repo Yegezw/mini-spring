@@ -15,4 +15,6 @@
 
     <bean id="baseService" class="com.test.ioc.BaseService"/>
 
+    <bean id="webBindingInitializer" class="com.test.config.DateInitializer"/>
+
 </beans>

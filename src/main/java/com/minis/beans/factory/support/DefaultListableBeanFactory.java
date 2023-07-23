@@ -62,7 +62,7 @@ public class DefaultListableBeanFactory
     @Override
     public Object getBean(String beanName) throws BeansException {
         Object result = super.getBean(beanName);
-        if (result == null) result = parentBeanFactory.getBean(beanName);
+        if (result == null && parentBeanFactory != null) result = parentBeanFactory.getBean(beanName); // 避免空指针异常
         return result;
     }
 }

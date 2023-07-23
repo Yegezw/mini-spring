@@ -16,4 +16,12 @@ public class PropertyValue {
         this.value = value;
         this.isRef = isRef;
     }
+
+    public PropertyValue(String type, String name, Object value) {
+        this(type, name, value, false);
+    }
+
+    public PropertyValue(String name, Object value) {
+        this("", name, value, false);
+    }
 }

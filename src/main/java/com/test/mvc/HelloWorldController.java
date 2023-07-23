@@ -8,8 +8,8 @@ public class HelloWorldController {
 
     @Autowired
     private BaseService baseService;
-    
-    @RequestMapping("/test")
+
+    @RequestMapping("/hw")
     public String doTest() {
         baseService.sayHello();
         return "hello world!";

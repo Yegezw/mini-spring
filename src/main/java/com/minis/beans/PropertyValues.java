@@ -2,6 +2,7 @@ package com.minis.beans;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Setter 参数
@@ -12,6 +13,15 @@ public class PropertyValues {
 
     public PropertyValues() {
         propertyValueList = new ArrayList<>(0);
+    }
+
+    public PropertyValues(Map<String, Object> map) {
+        propertyValueList = new ArrayList<>(10);
+
+        for (Map.Entry<String, Object> e : map.entrySet()) {
+            PropertyValue pv = new PropertyValue(e.getKey(), e.getValue());
+            propertyValueList.add(pv);
+        }
     }
 
     public List<PropertyValue> getPropertyValueList() {
