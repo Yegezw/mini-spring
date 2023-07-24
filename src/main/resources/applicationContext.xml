@@ -15,6 +15,31 @@
 
     <bean id="baseService" class="com.test.ioc.BaseService"/>
 
+    <!--handlerMapping-->
+    <bean id="handlerMapping" class="com.minis.web.servlet.mapping.RequestMappingHandlerMapping"/>
+    <!--handlerAdapter-->
+    <bean id="handlerAdapter" class="com.minis.web.servlet.adapter.RequestMappingHandlerAdapter">
+        <property type="com.minis.web.servlet.adapter.bind.WebBindingInitializer" name="webBindingInitializer"
+                  ref="webBindingInitializer"/>
+        <property type="com.minis.web.servlet.adapter.convert.http.HttpMessageConverter" name="messageConverter"
+                  ref="messageConverter"/>
+    </bean>
+    <!--viewResolver-->
+    <bean id="viewResolver" class="com.minis.web.servlet.resolver.InternalResourceViewResolver">
+        <property type="String" name="viewClassName" value="com.minis.web.servlet.resolver.view.JstlView"/>
+        <property type="String" name="prefix" value="/jsp/"/>
+        <property type="String" name="suffix" value=".jsp"/>
+    </bean>
+
+    <!--webBindingInitializer-->
     <bean id="webBindingInitializer" class="com.test.config.DateInitializer"/>
+    <!--messageConverter-->
+    <bean id="messageConverter" class="com.minis.web.servlet.adapter.convert.http.DefaultHttpMessageConverter">
+        <property type="com.minis.web.servlet.adapter.util.ObjectMapper" name="objectMapper" ref="objectMapper"/>
+    </bean>
+    <bean id="objectMapper" class="com.minis.web.servlet.adapter.util.DefaultObjectMapper">
+        <property type="String" name="dateFormat" value="yyyy/MM/dd"/>
+        <property type="String" name="decimalFormat" value="###.##"/>
+    </bean>
 
 </beans>

@@ -1,8 +1,9 @@
 package com.minis.web.servlet.mapping;
 
 import com.minis.beans.BeansException;
+import com.minis.context.ApplicationContext;
+import com.minis.context.ApplicationContextAware;
 import com.minis.web.config.RequestMapping;
-import com.minis.web.context.WebApplicationContext;
 import com.minis.web.servlet.config.HandlerMethod;
 import com.minis.web.servlet.config.MappingRegistry;
 
@@ -12,20 +13,18 @@ import java.lang.reflect.Method;
 /**
  * 请求映射(处理器映射器)
  */
-public class RequestMappingHandlerMapping implements HandlerMapping {
+public class RequestMappingHandlerMapping implements HandlerMapping, ApplicationContextAware {
 
     /**
      * 子 AnnotationConfigWeb 应用上下文, 由 DispatcherServlet 负责启动
      */
-    private WebApplicationContext webApplicationContext;
+    private ApplicationContext applicationContext = null;
     /**
      * 映射仓库
      */
-    private final MappingRegistry mappingRegistry = new MappingRegistry();
+    private MappingRegistry mappingRegistry = null;
 
-    public RequestMappingHandlerMapping(WebApplicationContext webApplicationContext) {
-        this.webApplicationContext = webApplicationContext;
-        initMapping();
+    public RequestMappingHandlerMapping() {
     }
 
     /**
@@ -33,13 +32,13 @@ public class RequestMappingHandlerMapping implements HandlerMapping {
      * <p>URL -> Controller + Method
      */
     protected void initMapping() {
-        String[] controllerNames = webApplicationContext.getBeanDefinitionNames(); // Controller 名称列表(类路径名)
+        String[] controllerNames = applicationContext.getBeanDefinitionNames(); // Controller 名称列表(类路径名)
         for (String controllerName : controllerNames) {
             Class<?> clazz;
             Object obj;
             try {
                 clazz = Class.forName(controllerName);
-                obj = webApplicationContext.getBean(controllerName);
+                obj = applicationContext.getBean(controllerName);
             } catch (ClassNotFoundException | BeansException e) {
                 throw new RuntimeException(e);
             }
@@ -57,9 +56,13 @@ public class RequestMappingHandlerMapping implements HandlerMapping {
         }
     }
 
-
     @Override
     public HandlerMethod getHandler(HttpServletRequest request) throws Exception {
+        if (mappingRegistry == null) {
+            mappingRegistry = new MappingRegistry();
+            initMapping();
+        }
+
         String path = request.getServletPath();
         // System.out.println(path);
         if (!mappingRegistry.urlMappingNames.contains(path)) return null;
@@ -67,5 +70,10 @@ public class RequestMappingHandlerMapping implements HandlerMapping {
         Object obj = mappingRegistry.mappingObjs.get(path);
         Method method = mappingRegistry.mappingMethods.get(path);
         return new HandlerMethod(obj, method);
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 }

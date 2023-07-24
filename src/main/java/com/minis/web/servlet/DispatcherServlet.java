@@ -5,10 +5,11 @@ import com.minis.web.config.XmlScanComponentHelper;
 import com.minis.web.context.AnnotationConfigWebApplicationContext;
 import com.minis.web.context.WebApplicationContext;
 import com.minis.web.servlet.adapter.HandlerAdapter;
-import com.minis.web.servlet.adapter.RequestMappingHandlerAdapter;
 import com.minis.web.servlet.config.HandlerMethod;
 import com.minis.web.servlet.mapping.HandlerMapping;
-import com.minis.web.servlet.mapping.RequestMappingHandlerMapping;
+import com.minis.web.servlet.resolver.ViewResolver;
+import com.minis.web.servlet.resolver.view.ModelAndView;
+import com.minis.web.servlet.resolver.view.View;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -26,6 +27,9 @@ public class DispatcherServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     public static final String WEB_APPLICATION_CONTEXT_ATTRIBUTE = DispatcherServlet.class.getName() + ".CONTEXT";
+    public static final String HANDLER_MAPPING_BEAN_NAME = "handlerMapping";
+    public static final String HANDLER_ADAPTER_BEAN_NAME = "handlerAdapter";
+    public static final String VIEW_RESOLVER_BEAN_NAME = "viewResolver";
 
     /**
      * 父 XmlWeb 应用上下文, 由 Listener 负责启动, 用于 IOC 容器
@@ -67,6 +71,10 @@ public class DispatcherServlet extends HttpServlet {
      * 处理器适配器
      */
     private HandlerAdapter handlerAdapter;
+    /**
+     * 视图解析器
+     */
+    private ViewResolver viewResolver;
 
     public DispatcherServlet() {
         System.out.println("DispatcherServlet 实例化完成");
@@ -137,20 +145,36 @@ public class DispatcherServlet extends HttpServlet {
      * 初始化 -> 处理器映射器
      */
     protected void initHandlerMappings(WebApplicationContext webApplicationContext) {
-        handlerMapping = new RequestMappingHandlerMapping(webApplicationContext);
+        try {
+            handlerMapping = (HandlerMapping) webApplicationContext.getBean(HANDLER_MAPPING_BEAN_NAME);
+        } catch (BeansException e) {
+            System.out.println("handlerMapping 获取失败");
+            e.printStackTrace();
+        }
     }
 
     /**
      * 初始化 -> 处理器适配器
      */
     protected void initHandlerAdapters(WebApplicationContext webApplicationContext) {
-        handlerAdapter = new RequestMappingHandlerAdapter(webApplicationContext);
+        try {
+            handlerAdapter = (HandlerAdapter) webApplicationContext.getBean(HANDLER_ADAPTER_BEAN_NAME);
+        } catch (BeansException e) {
+            System.out.println("handlerAdapter 获取失败");
+            e.printStackTrace();
+        }
     }
 
     /**
      * 初始化 -> 视图解析器
      */
-    protected void initViewResolvers(WebApplicationContext wac) {
+    protected void initViewResolvers(WebApplicationContext webApplicationContext) {
+        try {
+            viewResolver = (ViewResolver) webApplicationContext.getBean(VIEW_RESOLVER_BEAN_NAME);
+        } catch (BeansException e) {
+            System.out.println("viewResolver 获取失败");
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -169,6 +193,32 @@ public class DispatcherServlet extends HttpServlet {
         HandlerMethod handlerMethod = handlerMapping.getHandler(request);
         if (handlerMethod == null) return;
 
-        handlerAdapter.handle(request, response, handlerMethod);
+        ModelAndView mv = handlerAdapter.handle(request, response, handlerMethod);
+        render(request, response, mv);
+    }
+
+    /**
+     * 渲染
+     */
+    protected void render(HttpServletRequest request, HttpServletResponse response, ModelAndView mv) throws Exception {
+        if (mv == null) {
+            response.getWriter().flush();
+            response.getWriter().close();
+            return;
+        }
+
+        View view;
+        Map<String, Object> modelMap = mv.getModel();
+        if (mv.isReference()) {
+            String viewName = mv.getViewName();
+            view = resolveViewName(viewName, modelMap, request);
+        } else view = mv.getView();
+
+        view.render(modelMap, request, response);
+    }
+
+    protected View resolveViewName(String viewName, Map<String, Object> model, HttpServletRequest request) throws Exception {
+        if (viewResolver != null) return viewResolver.resolveViewName(viewName);
+        return null;
     }
 }
