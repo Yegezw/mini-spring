@@ -1,6 +1,6 @@
 package com.minis.web.servlet.mapping;
 
-import com.minis.beans.BeansException;
+import com.minis.beans.config.BeansException;
 import com.minis.context.ApplicationContext;
 import com.minis.context.ApplicationContextAware;
 import com.minis.web.config.RequestMapping;
@@ -47,10 +47,13 @@ public class RequestMappingHandlerMapping implements HandlerMapping, Application
             for (Method method : methods) {
                 boolean isRequestMapping = method.isAnnotationPresent(RequestMapping.class);
                 if (isRequestMapping) {
+                    String methodName = method.getName();
                     String urlMapping = method.getAnnotation(RequestMapping.class).value();
                     mappingRegistry.urlMappingNames.add(urlMapping);
                     mappingRegistry.mappingObjs.put(urlMapping, obj);
                     mappingRegistry.mappingMethods.put(urlMapping, method);
+                    mappingRegistry.mappingMethodNames.put(urlMapping, methodName);
+                    mappingRegistry.mappingClasses.put(urlMapping, clazz);
                 }
             }
         }
@@ -68,8 +71,11 @@ public class RequestMappingHandlerMapping implements HandlerMapping, Application
         if (!mappingRegistry.urlMappingNames.contains(path)) return null;
 
         Object obj = mappingRegistry.mappingObjs.get(path);
+        Class<?> clazz = mappingRegistry.mappingClasses.get(path);
         Method method = mappingRegistry.mappingMethods.get(path);
-        return new HandlerMethod(obj, method);
+        String methodName = mappingRegistry.mappingMethodNames.get(path);
+
+        return new HandlerMethod(obj, clazz, method, methodName);
     }
 
     @Override

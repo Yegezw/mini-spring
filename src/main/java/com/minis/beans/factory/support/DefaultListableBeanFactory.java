@@ -1,9 +1,8 @@
 package com.minis.beans.factory.support;
 
-import com.minis.beans.BeansException;
-import com.minis.beans.factory.config.AbstractAutowireCapableBeanFactory;
+import com.minis.beans.config.BeansException;
 import com.minis.beans.factory.config.BeanDefinition;
-import com.minis.beans.factory.config.ConfigurableListableBeanFactory;
+import com.minis.beans.factory.ConfigurableListableBeanFactory;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

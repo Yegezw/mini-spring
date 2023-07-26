@@ -1,6 +1,6 @@
 package com.minis.context;
 
-import com.minis.beans.BeansException;
+import com.minis.beans.config.BeansException;
 
 /**
  * 应用上下文感知

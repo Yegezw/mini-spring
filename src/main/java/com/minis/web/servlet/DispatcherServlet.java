@@ -1,6 +1,6 @@
 package com.minis.web.servlet;
 
-import com.minis.beans.BeansException;
+import com.minis.beans.config.BeansException;
 import com.minis.web.config.XmlScanComponentHelper;
 import com.minis.web.context.AnnotationConfigWebApplicationContext;
 import com.minis.web.context.WebApplicationContext;

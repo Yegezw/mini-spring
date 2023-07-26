@@ -1,13 +1,18 @@
 package com.minis.web.context;
 
 
-import com.minis.beans.BeansException;
-import com.minis.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
+import com.minis.beans.config.BeansException;
+import com.minis.beans.factory.postprocessor.bean.AutowiredAnnotationBeanPostProcessor;
 import com.minis.beans.factory.config.BeanDefinition;
-import com.minis.beans.factory.config.BeanFactoryPostProcessor;
-import com.minis.beans.factory.config.ConfigurableListableBeanFactory;
+import com.minis.beans.factory.postprocessor.factory.BeanFactoryPostProcessor;
+import com.minis.beans.factory.ConfigurableListableBeanFactory;
 import com.minis.beans.factory.support.DefaultListableBeanFactory;
-import com.minis.context.*;
+import com.minis.context.event.ApplicationEvent;
+import com.minis.context.event.ContextRefreshedEvent;
+import com.minis.context.listener.ApplicationListener;
+import com.minis.context.publisher.ApplicationEventPublisher;
+import com.minis.context.publisher.SimpleApplicationEventPublisher;
+import com.minis.context.support.AbstractApplicationContext;
 import com.minis.web.config.XmlScanComponentHelper;
 
 import javax.servlet.ServletContext;
@@ -149,13 +154,24 @@ public class AnnotationConfigWebApplicationContext extends AbstractApplicationCo
 
     @Override
     public void registerListeners() {
-        ApplicationListener listener = new ApplicationListener();
-        super.getApplicationEventPublisher().addApplicationListener(listener);
+        String[] beanDefinitionNames = beanFactory.getBeanDefinitionNames();
+        for (String beanDefinitionName : beanDefinitionNames) {
+            Object bean = null;
+            try {
+                bean = getBean(beanDefinitionName);
+            } catch (BeansException e) {
+                e.printStackTrace();
+            }
+
+            if (bean instanceof ApplicationListener) {
+                super.getApplicationEventPublisher().addApplicationListener((ApplicationListener<?>) bean);
+            }
+        }
     }
 
     @Override
     public void finishRefresh() {
-        // TODO Auto-generated method stub
+        publishEvent(new ContextRefreshedEvent(this));
     }
 
     // ======================================== ApplicationEventPublisher ======================================== //
@@ -166,7 +182,7 @@ public class AnnotationConfigWebApplicationContext extends AbstractApplicationCo
     }
 
     @Override
-    public void addApplicationListener(ApplicationListener listener) {
+    public void addApplicationListener(ApplicationListener<?> listener) {
         super.getApplicationEventPublisher().addApplicationListener(listener);
     }
 }

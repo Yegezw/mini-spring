@@ -1,13 +1,13 @@
-import com.minis.context.ClassPathXmlApplicationContext;
-import com.test.ioc.AService;
+import com.minis.context.support.ClassPathXmlApplicationContext;
+import com.test.service.BService;
 
 public class Test {
 
     // baseBaseService -> aService -> baseService -> baseBaseService
     private static void test() throws Exception {
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
-        AService aService = (AService) context.getBean("aService");
-        aService.sayHello();
+        BService bService = (BService) context.getBean("aService");
+        bService.sayHello();
     }
 
     public static void main(String[] args) throws Exception {

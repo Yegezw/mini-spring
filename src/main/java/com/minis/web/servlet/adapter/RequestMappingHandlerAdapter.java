@@ -1,6 +1,6 @@
 package com.minis.web.servlet.adapter;
 
-import com.minis.beans.BeansException;
+import com.minis.beans.config.BeansException;
 import com.minis.context.ApplicationContext;
 import com.minis.context.ApplicationContextAware;
 import com.minis.web.servlet.adapter.bind.WebBindingInitializer;
@@ -49,20 +49,20 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter, Application
 
     protected ModelAndView invokeHandlerMethod(HttpServletRequest request, HttpServletResponse response, HandlerMethod handlerMethod) throws Exception {
         WebDataBinderFactory binderFactory = new WebDataBinderFactory();
-        Parameter[] methodParameters = handlerMethod.getMethod().getParameters(); // 方法参数[]
-        Object[] methodParamObjs = new Object[methodParameters.length];           // 方法参数值[]
+        Parameter[] methodParameters = handlerMethod.method.getParameters(); // 方法参数[]
+        Object[] methodParamObjs = new Object[methodParameters.length];      // 方法参数值[]
 
         int i = 0;
         for (Parameter methodParameter : methodParameters) {
-            Class<?> type = methodParameter.getType();
-            Object methodParamObj;
+            Class<?> type = methodParameter.getType(); // 方法参数类型
+            Object methodParamObj;                     // 方法参数值
 
             if (type == HttpServletRequest.class) methodParamObj = request;
             else if (type == HttpServletResponse.class) methodParamObj = response;
             else {
                 // TODO 简单类型
                 // 复杂类型
-                methodParamObj = methodParameter.getType().newInstance(); // 方法参数值
+                methodParamObj = methodParameter.getType().newInstance();
 
                 WebDataBinder wdb = binderFactory.createBinder(request, methodParamObj, methodParameter.getName());
                 if (webBindingInitializer != null) webBindingInitializer.initBinder(wdb); // 此处是扩展点
@@ -72,8 +72,8 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter, Application
             methodParamObjs[i++] = methodParamObj;
         }
 
-        Method method = handlerMethod.getMethod();
-        Object result = method.invoke(handlerMethod.getBean(), methodParamObjs); // 调用处理器
+        Method method = handlerMethod.method;
+        Object result = method.invoke(handlerMethod.bean, methodParamObjs); // 调用处理器
         Class<?> returnType = method.getReturnType();
 
         ModelAndView mv = null;

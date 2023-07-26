@@ -1,7 +1,7 @@
 package com.minis.web.servlet.adapter.convert;
 
 
-import com.minis.beans.PropertyValue;
+import com.minis.beans.config.PropertyValue;
 import com.minis.web.servlet.adapter.convert.editor.PropertyEditor;
 
 import java.lang.reflect.Field;

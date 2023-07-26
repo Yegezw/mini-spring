@@ -1,12 +1,14 @@
 package com.minis.beans.factory.support;
 
-import com.minis.beans.BeansException;
-import com.minis.beans.PropertyValue;
-import com.minis.beans.PropertyValues;
+import com.minis.beans.config.BeansException;
+import com.minis.beans.config.PropertyValue;
+import com.minis.beans.config.PropertyValues;
 import com.minis.beans.factory.config.BeanDefinition;
-import com.minis.beans.factory.config.ConfigurableBeanFactory;
-import com.minis.beans.factory.config.ConstructorArgumentValue;
-import com.minis.beans.factory.config.ConstructorArgumentValues;
+import com.minis.beans.factory.ConfigurableBeanFactory;
+import com.minis.beans.config.ConstructorArgumentValue;
+import com.minis.beans.config.ConstructorArgumentValues;
+import com.minis.beans.factory.registry.bean.DefaultSingletonBeanRegistry;
+import com.minis.beans.factory.registry.definition.BeanDefinitionRegistry;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

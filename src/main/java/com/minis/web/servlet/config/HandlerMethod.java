@@ -7,33 +7,19 @@ import java.lang.reflect.Method;
  */
 public class HandlerMethod {
 
-    private Object bean;
-    private Class<?> beanType;
-    private Method method;
-    private MethodParameter[] parameters;
-    private Class<?> returnType;
-    private String description;
-    private String className;
-    private String methodName;
+    public Object bean;
+    public Class<?> beanType;
+    public Method method;
+    public MethodParameter[] parameters;
+    public Class<?> returnType;
+    public String description;
+    public String className;
+    public String methodName;
 
-    public HandlerMethod(Object obj, Method method) {
-        setBean(obj);
-        setMethod(method);
-    }
-
-    public Object getBean() {
-        return bean;
-    }
-
-    public void setBean(Object bean) {
-        this.bean = bean;
-    }
-
-    public Method getMethod() {
-        return method;
-    }
-
-    public void setMethod(Method method) {
+    public HandlerMethod(Object obj, Class<?> clazz, Method method, String methodName) {
+        this.bean = obj;
+        this.beanType = clazz;
         this.method = method;
+        this.methodName = methodName;
     }
 }

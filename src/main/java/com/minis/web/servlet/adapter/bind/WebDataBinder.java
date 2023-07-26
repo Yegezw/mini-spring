@@ -1,6 +1,6 @@
 package com.minis.web.servlet.adapter.bind;
 
-import com.minis.beans.PropertyValues;
+import com.minis.beans.config.PropertyValues;
 import com.minis.web.servlet.adapter.convert.AbstractPropertyAccessor;
 import com.minis.web.servlet.adapter.convert.BeanWrapperImpl;
 import com.minis.web.servlet.adapter.convert.editor.PropertyEditor;

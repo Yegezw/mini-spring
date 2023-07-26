@@ -1,6 +1,7 @@
 package com.minis.beans.factory.config;
 
-import com.minis.beans.PropertyValues;
+import com.minis.beans.config.ConstructorArgumentValues;
+import com.minis.beans.config.PropertyValues;
 
 import java.util.Objects;
 

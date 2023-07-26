@@ -1,6 +1,6 @@
 package com.minis.beans.factory;
 
-import com.minis.beans.BeansException;
+import com.minis.beans.config.BeansException;
 
 /**
  * Bean 工厂

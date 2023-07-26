@@ -1,6 +1,6 @@
 package com.minis.web.context;
 
-import com.minis.context.ClassPathXmlApplicationContext;
+import com.minis.context.support.ClassPathXmlApplicationContext;
 
 import javax.servlet.ServletContext;
 

@@ -1,19 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
 
-    <bean id="baseBaseService" class="com.test.ioc.BaseBaseService">
-        <property type="com.test.ioc.AService" name="aService" ref="aService"/>
+    <bean id="aService" class="com.test.service.AService" init-method="init">
+        <property type="com.test.service.BService" name="bService" ref="bService"/>
     </bean>
 
-    <bean id="aService" class="com.test.ioc.AServiceImpl">
+    <bean id="bService" class="com.test.service.BServiceImpl">
         <constructor-arg type="String" name="name" value="abc"/>
         <constructor-arg type="int" name="level" value="3"/>
         <property type="String" name="property1" value="Someone says"/>
         <property type="String" name="property2" value="Hello World!"/>
-        <property type="com.test.ioc.BaseService" name="baseService" ref="baseService"/>
+        <property type="com.test.service.CService" name="cService" ref="cService"/>
     </bean>
 
-    <bean id="baseService" class="com.test.ioc.BaseService"/>
+    <bean id="cService" class="com.test.service.CService" init-method="init"/>
+
+
+    <!--MyListener-->
+    <bean id="contextListener" class="com.test.config.ioc.MyListener"/>
+    <!--MyBeanFactoryPostProcessor-->
+    <bean id="beanFactoryPostProcessor" class="com.test.config.ioc.MyBeanFactoryPostProcessor"/>
+    <!--AutowiredAnnotationBeanPostProcessor-->
+    <bean id="autowiredAnnotationBeanPostProcessor"
+          class="com.minis.beans.factory.postprocessor.bean.AutowiredAnnotationBeanPostProcessor"/>
+    <!--LogBeanPostProcessor-->
+    <bean id="logBeanPostProcessor" class="com.test.config.ioc.LogBeanPostProcessor"/>
+
 
     <!--handlerMapping-->
     <bean id="handlerMapping" class="com.minis.web.servlet.mapping.RequestMappingHandlerMapping"/>
@@ -32,7 +44,7 @@
     </bean>
 
     <!--webBindingInitializer-->
-    <bean id="webBindingInitializer" class="com.test.config.DateInitializer"/>
+    <bean id="webBindingInitializer" class="com.test.config.mvc.DateInitializer"/>
     <!--messageConverter-->
     <bean id="messageConverter" class="com.minis.web.servlet.adapter.convert.http.DefaultHttpMessageConverter">
         <property type="com.minis.web.servlet.adapter.util.ObjectMapper" name="objectMapper" ref="objectMapper"/>
