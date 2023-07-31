@@ -7,6 +7,8 @@ import com.test.jdbc.UserService;
 import com.test.pojo.User;
 import com.test.pojo.UserId;
 
+import java.util.List;
+
 public class UserController {
 
     @Autowired
@@ -25,5 +27,17 @@ public class UserController {
         System.out.println(userInfo2);
 
         return userInfo2;
+    }
+
+    /**
+     * <a href="http://localhost:8080/getUsers">测试连接</a>
+     */
+    @ResponseBody
+    @RequestMapping("/getUsers")
+    public List<User> getUsers(UserId userId) {
+        List<User> users = userService.getUsers(0);
+        System.out.println(users);
+
+        return users;
     }
 }

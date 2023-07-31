@@ -4,6 +4,7 @@ import com.minis.beans.factory.config.annotation.Autowired;
 import com.minis.jdbc.core.JdbcTemplate;
 import com.minis.jdbc.core.PreparedStatementCallback;
 import com.minis.jdbc.core.StatementCallback;
+import com.minis.jdbc.support.RowMapper;
 import com.test.pojo.User;
 
 import java.sql.PreparedStatement;
@@ -13,6 +14,7 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 public class UserService {
 
@@ -73,5 +75,29 @@ public class UserService {
                 }
             }
         });
+    }
+
+    /**
+     * RowMapper
+     */
+    public List<User> getUsers(int userid) {
+        // 匿名内部类可以访问外部函数的 final 局部变量
+        String sql = "select userId, userName, birthday from users where userId > ?";
+
+        return jdbcTemplate.query(sql, new Object[]{userid},
+                new RowMapper<User>() {
+                    public User mapRow(ResultSet rs, int i) throws SQLException {
+                        try {
+                            int userId = rs.getInt("userId");
+                            String userName = rs.getString("userName");
+                            String birthday = rs.getString("birthday");
+                            Date data = new SimpleDateFormat("yyyy-MM-dd").parse(birthday);
+                            return new User(userId, userName, data);
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+        );
     }
 }

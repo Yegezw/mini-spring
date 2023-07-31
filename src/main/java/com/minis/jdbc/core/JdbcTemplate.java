@@ -1,10 +1,13 @@
 package com.minis.jdbc.core;
 
 import com.minis.beans.factory.config.annotation.Autowired;
+import com.minis.jdbc.support.RowMapper;
+import com.minis.jdbc.support.arg.ArgumentPreparedStatementSetter;
+import com.minis.jdbc.support.res.RowMapperResultSetExtractor;
 
 import javax.sql.DataSource;
 import java.sql.*;
-import java.text.SimpleDateFormat;
+import java.util.List;
 
 /**
  * Jdbc 模板
@@ -22,7 +25,7 @@ public class JdbcTemplate {
     }
 
     /**
-     * 普通 Statement
+     * 普通 Statement + StatementCallback
      */
     public Object query(StatementCallback callback) {
         Connection connection = null;
@@ -48,7 +51,7 @@ public class JdbcTemplate {
     }
 
     /**
-     * PreparedStatement
+     * PreparedStatement + PreparedStatementCallback
      */
     public Object query(String sql, Object[] args, PreparedStatementCallback callback) {
         Connection connection = null;
@@ -57,24 +60,51 @@ public class JdbcTemplate {
         try {
             connection = dataSource.getConnection();
             statement = connection.prepareStatement(sql);
-            if (args != null) {
-                for (int i = 0; i < args.length; i++) {
-                    Object arg = args[i];
-                    if (arg instanceof String) {
-                        statement.setString(i + 1, (String) arg);
-                    } else if (arg instanceof Integer) {
-                        statement.setInt(i + 1, (int) arg);
-                    } else if (arg instanceof java.util.Date) {
-                        statement.setString(i + 1, new SimpleDateFormat("yyyy-MM-dd").format((java.util.Date) arg));
-                    }
-                }
-            }
+            // 通过 ArgumentPreparedStatementSetter 统一设置参数值
+            ArgumentPreparedStatementSetter setter = new ArgumentPreparedStatementSetter(args);
+            setter.setValues(statement);
 
             return callback.doInPreparedStatement(statement); // 回调
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
+                if (statement != null) statement.close();
+                if (connection != null) connection.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * PreparedStatement + RowMapper
+     */
+    public <T> List<T> query(String sql, Object[] args, RowMapper<T> rowMapper) {
+        // 结果集提取器 -> 行映射器
+        RowMapperResultSetExtractor<T> resultExtractor = new RowMapperResultSetExtractor<>(rowMapper);
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+
+        try {
+            connection = dataSource.getConnection();
+            statement = connection.prepareStatement(sql);
+            // 通过 ArgumentPreparedStatementSetter 统一设置参数值
+            ArgumentPreparedStatementSetter argumentSetter = new ArgumentPreparedStatementSetter(args);
+            argumentSetter.setValues(statement);
+
+            rs = statement.executeQuery();
+
+            // 提取数据
+            return resultExtractor.extractData(rs);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
                 if (statement != null) statement.close();
                 if (connection != null) connection.close();
             } catch (SQLException e) {

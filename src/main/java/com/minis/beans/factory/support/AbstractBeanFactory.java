@@ -244,16 +244,18 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
                     // no ref, generic property
                     if ("String".equals(type) || "java.lang.String".equals(type)) {
                         paramTypes[0] = String.class;
+                        paramValues[0] = value;
                     } else if ("Integer".equals(type) || "java.lang.Integer".equals(type)) {
                         paramTypes[0] = Integer.class;
+                        paramValues[0] = Integer.valueOf((String) value);
                     } else if ("int".equals(type)) {
                         paramTypes[0] = int.class;
+                        paramValues[0] = Integer.valueOf((String) value);
                     } else {
                         // 默认为 String
                         paramTypes[0] = String.class;
+                        paramValues[0] = value;
                     }
-
-                    paramValues[0] = value;
                 } else {
                     // is ref, dependency property, create the dependent beans
                     try {
