@@ -1,53 +1,87 @@
 package com.minis.jdbc.core;
 
+import com.minis.beans.factory.config.annotation.Autowired;
+
+import javax.sql.DataSource;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 
 /**
  * Jdbc 模板
  */
-public abstract class JdbcTemplate {
+public class JdbcTemplate {
 
-    private static final String url = "jdbc:mysql://127.0.0.1:3306/minis";
-    private static final String user = "root";
-    private static final String password = "root";
+    @Autowired
+    private DataSource dataSource;
 
     public JdbcTemplate() {
     }
 
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
     /**
-     * 模板方法
+     * 普通 Statement
      */
-    public Object query(String sql) {
+    public Object query(StatementCallback callback) {
         Connection connection = null;
-        PreparedStatement statement = null;
-        ResultSet res = null;
-        Object ret = null;
+        Statement statement = null;
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection(url, user, password);
+            connection = dataSource.getConnection();
+            statement = connection.createStatement();
 
-            statement = connection.prepareStatement(sql);
-            res = statement.executeQuery();
-
-            ret = doInStatement(res); // 抽象方法
-        } catch (ClassNotFoundException | SQLException e) {
-            throw new RuntimeException(e);
+            return callback.doInStatement(statement); // 回调
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             try {
-                if (res != null) res.close();
                 if (statement != null) statement.close();
                 if (connection != null) connection.close();
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-
-            return ret;
         }
+
+        return null;
     }
 
     /**
-     * 处理结果集
+     * PreparedStatement
      */
-    protected abstract Object doInStatement(ResultSet res);
+    public Object query(String sql, Object[] args, PreparedStatementCallback callback) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        try {
+            connection = dataSource.getConnection();
+            statement = connection.prepareStatement(sql);
+            if (args != null) {
+                for (int i = 0; i < args.length; i++) {
+                    Object arg = args[i];
+                    if (arg instanceof String) {
+                        statement.setString(i + 1, (String) arg);
+                    } else if (arg instanceof Integer) {
+                        statement.setInt(i + 1, (int) arg);
+                    } else if (arg instanceof java.util.Date) {
+                        statement.setString(i + 1, new SimpleDateFormat("yyyy-MM-dd").format((java.util.Date) arg));
+                    }
+                }
+            }
+
+            return callback.doInPreparedStatement(statement); // 回调
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (statement != null) statement.close();
+                if (connection != null) connection.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return null;
+    }
 }
