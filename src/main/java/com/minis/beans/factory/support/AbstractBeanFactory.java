@@ -1,13 +1,9 @@
 package com.minis.beans.factory.support;
 
-import com.minis.beans.config.BeansException;
-import com.minis.beans.config.PropertyValue;
-import com.minis.beans.config.PropertyValues;
-import com.minis.beans.factory.config.BeanDefinition;
+import com.minis.beans.config.*;
 import com.minis.beans.factory.ConfigurableBeanFactory;
-import com.minis.beans.config.ConstructorArgumentValue;
-import com.minis.beans.config.ConstructorArgumentValues;
-import com.minis.beans.factory.registry.bean.DefaultSingletonBeanRegistry;
+import com.minis.beans.factory.FactoryBean;
+import com.minis.beans.factory.config.BeanDefinition;
 import com.minis.beans.factory.registry.definition.BeanDefinitionRegistry;
 
 import java.lang.reflect.Constructor;
@@ -22,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 抽象 Bean 工厂(Bean 仓库 + BeanDefinition 仓库)
  */
-public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory, BeanDefinitionRegistry {
+public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport implements ConfigurableBeanFactory, BeanDefinitionRegistry {
 
     protected List<String> beanDefinitionNames = new ArrayList<>();
     protected Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(256);
@@ -122,6 +118,12 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
                 // step 4 : postProcessAfterInitialization
                 applyBeanPostProcessorsAfterInitialization(singleton, beanName);  // 抽象方法
             }
+        }
+
+        // process Factory Bean
+        if (singleton instanceof FactoryBean) {
+            System.out.println(String.format("---------- FactoryBean: AbstractBeanFactory.getBean(%s)", beanName));
+            return getObjectForBeanInstance(singleton, beanName);
         }
 
         return singleton;
@@ -303,6 +305,14 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             e.printStackTrace();
         }
+    }
+
+    protected Object getObjectForBeanInstance(Object beanInstance, String beanName) {
+        // 现在我们有了 bean 实例, 它可能是普通 bean 或 FactoryBean
+        if (!(beanInstance instanceof FactoryBean)) return beanInstance;
+
+        FactoryBean<?> factory = (FactoryBean<?>) beanInstance;
+        return super.getObjectFromFactoryBean(factory, beanName);
     }
 
     /**

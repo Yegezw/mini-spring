@@ -90,6 +90,7 @@ public class RequestMappingHandlerAdapter implements HandlerAdapter, Application
                 mv.setViewName(viewName);
             }
         }
+        // 如果方法的返回来行为 void, 将返回 null
         // 如果方法有 @ResponseBody, 将返回 null
         // 如果方法无 @ResponseBody, 而 result 既不是 ModelAndView, 也不是 String, 将返回 null
         return mv;

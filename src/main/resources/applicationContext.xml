@@ -74,4 +74,11 @@
     <bean id="sqlSessionFactory" class="com.minis.batis.factory.DefaultSqlSessionFactory" init-method="init">
         <property type="String" name="mapperLocations" value="mapper"/>
     </bean>
+
+
+    <!--ProxyFactoryBean: action-->
+    <bean id="action" class="com.minis.aop.ProxyFactoryBean">
+        <property type="java.lang.Object" name="target" ref="realAction"/>
+    </bean>
+    <bean id="realAction" class="com.test.aop.ActionImpl"/>
 </beans>

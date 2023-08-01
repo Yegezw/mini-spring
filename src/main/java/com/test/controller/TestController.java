@@ -1,10 +1,15 @@
 package com.test.controller;
 
+import com.minis.beans.factory.config.annotation.Autowired;
 import com.minis.web.config.RequestMapping;
 import com.minis.web.servlet.config.ResponseBody;
 import com.minis.web.servlet.resolver.view.ModelAndView;
+import com.test.aop.IAction;
 import com.test.pojo.Student;
 import com.test.pojo.User;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public class TestController {
 
@@ -35,5 +40,18 @@ public class TestController {
     @RequestMapping("/test3")
     public ModelAndView test3() {
         return new ModelAndView("test3");
+    }
+
+    @Autowired
+    private IAction action;
+
+    /**
+     * <a href="http://localhost:8080/testAop">测试连接</a>
+     */
+    @ResponseBody
+    @RequestMapping("/testAop")
+    public String doTestAop(HttpServletRequest request, HttpServletResponse response) {
+        action.doAction();
+        return "test aop, hello world!";
     }
 }
