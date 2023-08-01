@@ -26,6 +26,9 @@ public class UserController {
         User userInfo2 = userService.getUserInfo2(userId.getUserId());
         System.out.println(userInfo2);
 
+        User userInfo3 = userService.getUserInfo3(userId.getUserId());
+        System.out.println(userInfo3);
+
         return userInfo2;
     }
 

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapper namespace="com.test.pojo.User">
+    <select id="getUserInfo" parameterType="java.lang.Integer" resultType="com.test.pojo.User">
+        select userId, userName, birthday
+        from users
+        where userId = ?
+    </select>
+</mapper>

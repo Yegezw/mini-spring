@@ -1,5 +1,7 @@
 package com.test.jdbc;
 
+import com.minis.batis.factory.SqlSessionFactory;
+import com.minis.batis.sqlsession.SqlSession;
 import com.minis.beans.factory.config.annotation.Autowired;
 import com.minis.jdbc.core.JdbcTemplate;
 import com.minis.jdbc.core.PreparedStatementCallback;
@@ -20,6 +22,9 @@ public class UserService {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private SqlSessionFactory sqlSessionFactory;
 
     /**
      * 普通 StatementCallback
@@ -78,13 +83,39 @@ public class UserService {
     }
 
     /**
+     * Mybatis
+     */
+    public User getUserInfo3(int userId) {
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+        return (User) sqlSession.selectOne("com.test.pojo.User.getUserInfo", new Object[]{userId}, new PreparedStatementCallback() {
+            @Override
+            public Object doInPreparedStatement(PreparedStatement statement) throws SQLException {
+                try {
+                    ResultSet res = statement.executeQuery();
+                    User user = null;
+                    if (res.next()) {
+                        int userId = res.getInt("userId");
+                        String userName = res.getString("userName");
+                        String birthday = res.getString("birthday");
+                        Date data = new SimpleDateFormat("yyyy-MM-dd").parse(birthday);
+                        user = new User(userId, userName, data);
+                    }
+                    return user;
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+    }
+
+    /**
      * RowMapper
      */
-    public List<User> getUsers(int userid) {
+    public List<User> getUsers(int userId) {
         // 匿名内部类可以访问外部函数的 final 局部变量
         String sql = "select userId, userName, birthday from users where userId > ?";
 
-        return jdbcTemplate.query(sql, new Object[]{userid},
+        return jdbcTemplate.query(sql, new Object[]{userId},
                 new RowMapper<User>() {
                     public User mapRow(ResultSet rs, int i) throws SQLException {
                         try {
