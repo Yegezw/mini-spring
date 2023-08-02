@@ -10,4 +10,3 @@ public interface AopProxy {
      */
     Object getProxy();
 }
-

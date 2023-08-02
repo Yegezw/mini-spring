@@ -1,5 +1,6 @@
 package com.minis.aop.factory;
 
+import com.minis.aop.advisor.Advisor;
 import com.minis.aop.proxy.AopProxy;
 import com.minis.aop.proxy.JdkDynamicAopProxy;
 
@@ -9,11 +10,7 @@ import com.minis.aop.proxy.JdkDynamicAopProxy;
 public class DefaultAopProxyFactory implements AopProxyFactory {
 
     @Override
-    public AopProxy createAopProxy(Object target) {
-        // Class<?> targetClass = target.getClass();
-        // if (targetClass.isInterface() || Proxy.isProxyClass(targetClass)) {
-            return new JdkDynamicAopProxy(target);
-        // }
-        // return new CglibAopProxy(config);
+    public AopProxy createAopProxy(Object target, Advisor advisor) {
+        return new JdkDynamicAopProxy(target, advisor);
     }
 }
