@@ -43,7 +43,9 @@ public class TestController {
     }
 
     @Autowired
-    private IAction action;
+    private IAction realAction1; // 符合 real*, 代理对象
+    @Autowired
+    private IAction realAction2; // 符合 real*, 代理对象
 
     /**
      * <a href="http://localhost:8080/testAop">测试连接</a>
@@ -51,9 +53,14 @@ public class TestController {
     @ResponseBody
     @RequestMapping("/testAop")
     public String doTestAop(HttpServletRequest request, HttpServletResponse response) {
-        action.doAction();    // 符合 do*, 会被增强
-        action.doSomething(); // 符合 do*, 会被增强
-        action.test();        // 不符合 do*, 不会被增强
+        realAction1.doAction();    // 符合 do*, 会被增强
+        realAction1.doSomething(); // 符合 do*, 会被增强
+        realAction1.test();        // 不符合 do*, 不会被增强
+
+        realAction2.doAction();    // 符合 do*, 会被增强
+        realAction2.doSomething(); // 符合 do*, 会被增强
+        realAction2.test();        // 不符合 do*, 不会被增强
+
         return "test aop, hello world!";
     }
 }

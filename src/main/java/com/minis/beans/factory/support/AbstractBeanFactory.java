@@ -110,8 +110,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
                 // BeanPostProcessor
 
-                // step 1 : postProcessBeforeInitialization
-                applyBeanPostProcessorsBeforeInitialization(singleton, beanName); // 抽象方法
+                // step 1 : postProcessBeforeInitialization(BeanNameAutoProxyCreator 会返回代理对象 ProxyFactoryBean)
+                singleton = applyBeanPostProcessorsBeforeInitialization(singleton, beanName); // 抽象方法
 
                 // step 2 : afterPropertiesSet
                 // step 3 : init-method
@@ -127,7 +127,15 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
         // process Factory Bean
         if (singleton instanceof FactoryBean) {
             System.out.println(String.format("---------- FactoryBean: AbstractBeanFactory.getBean(%s)", beanName));
-            return getObjectForBeanInstance(singleton, beanName);
+            // 这里的 singleton 是代理对象
+            singleton = getObjectForBeanInstance(singleton, beanName);
+
+            // step 1 中 BeanNameAutoProxyCreator 会返回代理对象 ProxyFactoryBean
+            // 所以这里需要: 先删除原始对象, 然后添加代理对象
+            super.removeSingleton(beanName);
+            registerBean(beanName, singleton);
+
+            return singleton;
         }
 
         return singleton;

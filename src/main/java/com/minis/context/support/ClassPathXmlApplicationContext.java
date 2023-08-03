@@ -76,8 +76,8 @@ public class ClassPathXmlApplicationContext extends AbstractApplicationContext {
             if (BeanFactoryPostProcessor.class.isAssignableFrom(clazz)) {
                 try {
                     // BeanFactoryPostProcessor 完成实例化并注入
-                    beanFactoryPostProcessors.add((BeanFactoryPostProcessor) clazz.newInstance());
-                } catch (InstantiationException | IllegalAccessException e) {
+                    beanFactoryPostProcessors.add((BeanFactoryPostProcessor) beanFactory.getBean(beanDefinitionName));
+                } catch (BeansException e) {
                     e.printStackTrace();
                 }
             }
@@ -91,7 +91,6 @@ public class ClassPathXmlApplicationContext extends AbstractApplicationContext {
             }
         }
 
-        // TODO BeanFactoryPostProcessor 在 AbstractBeanFactory.refresh() 再次实例化但不会注入
         System.out.println("BeanFactoryPostProcessor 完成实例化并注入");
     }
 
@@ -111,14 +110,13 @@ public class ClassPathXmlApplicationContext extends AbstractApplicationContext {
             if (BeanPostProcessor.class.isAssignableFrom(clazz)) {
                 try {
                     // BeanPostProcessor 完成实例化并注入
-                    beanFactory.addBeanPostProcessor((BeanPostProcessor) clazz.newInstance());
-                } catch (InstantiationException | IllegalAccessException e) {
+                    beanFactory.addBeanPostProcessor((BeanPostProcessor) beanFactory.getBean(beanDefinitionName));
+                } catch (BeansException e) {
                     e.printStackTrace();
                 }
             }
         }
 
-        // TODO BeanPostProcessor 在 AbstractBeanFactory.refresh() 再次实例化但不会注入
         System.out.println("BeanPostProcessor 完成实例化并注入");
     }
 

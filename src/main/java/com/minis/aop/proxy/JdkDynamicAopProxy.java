@@ -41,6 +41,7 @@ public class JdkDynamicAopProxy implements AopProxy, InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         Class<?> targetClass = (target != null ? target.getClass() : null);
 
+        // 方法名匹配给定的模式, 进行增强
         if (advisor.getPointcut().getMethodMatcher().matches(method, targetClass)) {
             MethodInterceptor interceptor = advisor.getMethodInterceptor();
             MethodInvocation invocation = new ReflectiveMethodInvocation(proxy, target, method, args, targetClass);
@@ -48,6 +49,7 @@ public class JdkDynamicAopProxy implements AopProxy, InvocationHandler {
             return interceptor.invoke(invocation);
         }
 
-        return null;
+        // 方法名不匹配给定的模式, 调用原始方法
+        return method.invoke(target, args);
     }
 }

@@ -76,12 +76,17 @@
     </bean>
 
 
-    <!--ProxyFactoryBean: action-->
-    <bean id="action" class="com.minis.aop.ProxyFactoryBean">
-        <property type="java.lang.Object" name="target" ref="realAction"/>
+    <!--自动代理创建者 autoProxyCreator-->
+    <bean id="autoProxyCreator" class="com.minis.aop.autoproxy.BeanNameAutoProxyCreator">
+        <property type="String" name="pattern" value="real*"/>
         <property type="String" name="advisorName" value="advisor"/>
     </bean>
-    <bean id="realAction" class="com.test.aop.ActionImpl"/>
+
+    <!--目标对象-->
+    <bean id="realAction1" class="com.test.aop.ActionImpl1"/>
+    <bean id="realAction2" class="com.test.aop.ActionImpl2"/>
+
+    <!--增强器 advisor-->
     <bean id="advisor" class="com.minis.aop.advisor.NameMatchMethodPointcutAdvisor">
         <!--只能配置 1 个增强操作: 修改 ref = myInterceptor / myBeforeAdvice / myAfterAdvice-->
         <property type="com.minis.aop.advice.Advice" name="advice" ref="myBeforeAdvice"/>
