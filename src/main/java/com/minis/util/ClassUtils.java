@@ -1,4 +1,4 @@
-package com.minis.web.servlet.adapter.util;
+package com.minis.util;
 
 import java.beans.Introspector;
 import java.io.Closeable;

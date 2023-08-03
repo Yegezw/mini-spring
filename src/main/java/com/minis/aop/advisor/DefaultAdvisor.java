@@ -1,5 +1,6 @@
 package com.minis.aop.advisor;
 
+import com.minis.aop.advice.Advice;
 import com.minis.aop.advice.interceptor.MethodInterceptor;
 
 /**
@@ -17,6 +18,11 @@ public class DefaultAdvisor implements Advisor {
     }
 
     public MethodInterceptor getMethodInterceptor() {
+        return methodInterceptor;
+    }
+
+    @Override
+    public Advice getAdvice() {
         return methodInterceptor;
     }
 }

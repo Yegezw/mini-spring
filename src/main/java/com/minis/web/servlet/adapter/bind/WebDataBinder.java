@@ -4,7 +4,7 @@ import com.minis.beans.config.PropertyValues;
 import com.minis.web.servlet.adapter.convert.AbstractPropertyAccessor;
 import com.minis.web.servlet.adapter.convert.BeanWrapperImpl;
 import com.minis.web.servlet.adapter.convert.editor.PropertyEditor;
-import com.minis.web.servlet.adapter.util.WebUtils;
+import com.minis.util.WebUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Field;

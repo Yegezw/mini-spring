@@ -1,4 +1,4 @@
-package com.minis.web.servlet.adapter.util;
+package com.minis.util;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Enumeration;

@@ -1,9 +1,9 @@
 package com.minis.aop.proxy;
 
 import com.minis.aop.advice.interceptor.MethodInterceptor;
+import com.minis.aop.advisor.PointcutAdvisor;
 import com.minis.aop.method.MethodInvocation;
 import com.minis.aop.method.ReflectiveMethodInvocation;
-import com.minis.aop.advisor.Advisor;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -19,11 +19,11 @@ public class JdkDynamicAopProxy implements AopProxy, InvocationHandler {
      */
     private Object target;
     /**
-     * 增强器
+     * 切入点增强
      */
-    private Advisor advisor;
+    private PointcutAdvisor advisor;
 
-    public JdkDynamicAopProxy(Object target, Advisor advisor) {
+    public JdkDynamicAopProxy(Object target, PointcutAdvisor advisor) {
         this.target = target;
         this.advisor = advisor;
     }
@@ -39,9 +39,9 @@ public class JdkDynamicAopProxy implements AopProxy, InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        // 只对 doAction() 添加额外的逻辑
-        if (method.getName().equals("doAction")) {
-            Class<?> targetClass = (target != null ? target.getClass() : null);
+        Class<?> targetClass = (target != null ? target.getClass() : null);
+
+        if (advisor.getPointcut().getMethodMatcher().matches(method, targetClass)) {
             MethodInterceptor interceptor = advisor.getMethodInterceptor();
             MethodInvocation invocation = new ReflectiveMethodInvocation(proxy, target, method, args, targetClass);
 

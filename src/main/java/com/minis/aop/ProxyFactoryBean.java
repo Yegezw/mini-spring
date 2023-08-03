@@ -1,14 +1,6 @@
 package com.minis.aop;
 
-import com.minis.aop.advice.after.AfterAdvice;
-import com.minis.aop.advice.after.AfterReturningAdvice;
-import com.minis.aop.advice.interceptor.AfterReturningAdviceInterceptor;
-import com.minis.aop.advice.before.BeforeAdvice;
-import com.minis.aop.advice.before.MethodBeforeAdvice;
-import com.minis.aop.advice.interceptor.MethodBeforeAdviceInterceptor;
-import com.minis.aop.advice.interceptor.MethodInterceptor;
-import com.minis.aop.advisor.Advisor;
-import com.minis.aop.advisor.DefaultAdvisor;
+import com.minis.aop.advisor.PointcutAdvisor;
 import com.minis.aop.factory.AopProxyFactory;
 import com.minis.aop.factory.DefaultAopProxyFactory;
 import com.minis.aop.proxy.AopProxy;
@@ -16,7 +8,7 @@ import com.minis.beans.config.BeansException;
 import com.minis.beans.factory.BeanFactory;
 import com.minis.beans.factory.BeanFactoryAware;
 import com.minis.beans.factory.FactoryBean;
-import com.minis.web.servlet.adapter.util.ClassUtils;
+import com.minis.util.ClassUtils;
 
 /**
  * 代理 FactoryBean
@@ -45,13 +37,13 @@ public class ProxyFactoryBean implements FactoryBean<Object>, BeanFactoryAware {
     private Object singletonInstance;
 
     /**
-     * 拦截器名称
+     * 增强器名称
      */
-    private String interceptorName;
+    private String advisorName;
     /**
-     * 增强器
+     * 切入点增强器
      */
-    private Advisor advisor;
+    private PointcutAdvisor advisor;
 
     public ProxyFactoryBean() {
         aopProxyFactory = new DefaultAopProxyFactory();
@@ -67,26 +59,16 @@ public class ProxyFactoryBean implements FactoryBean<Object>, BeanFactoryAware {
      * 初始化增强器
      */
     private synchronized void initializeAdvisor() {
-        Object advice = null;
-        MethodInterceptor interceptor = null;
+        Object advisor = null;
 
         try {
-            // 根据 interceptorName 获取拦截器(Advice 子接口 MethodInterceptor)
-            advice = beanFactory.getBean(interceptorName);
+            advisor = beanFactory.getBean(advisorName);
         } catch (BeansException e) {
             e.printStackTrace();
         }
 
-        if (advice instanceof BeforeAdvice) {
-            interceptor = new MethodBeforeAdviceInterceptor((MethodBeforeAdvice) advice);
-        } else if (advice instanceof AfterAdvice) {
-            interceptor = new AfterReturningAdviceInterceptor((AfterReturningAdvice) advice);
-        } else if (advice instanceof MethodInterceptor) {
-            interceptor = (MethodInterceptor) advice;
-        }
-
-        advisor = new DefaultAdvisor();
-        advisor.setMethodInterceptor(interceptor);
+        // TODO 现在只支持 PointcutAdvisor
+        if (advisor instanceof PointcutAdvisor) this.advisor = (PointcutAdvisor) advisor;
     }
 
     /**
@@ -119,6 +101,10 @@ public class ProxyFactoryBean implements FactoryBean<Object>, BeanFactoryAware {
 
     // ======================================== getter()、setter() ========================================
 
+    public void setAdvisor(PointcutAdvisor advisor) {
+        this.advisor = advisor;
+    }
+
     @Override
     public void setBeanFactory(BeanFactory beanFactory) {
         this.beanFactory = beanFactory;
@@ -132,8 +118,8 @@ public class ProxyFactoryBean implements FactoryBean<Object>, BeanFactoryAware {
         return aopProxyFactory;
     }
 
-    public void setInterceptorName(String interceptorName) {
-        this.interceptorName = interceptorName;
+    public void setAdvisorName(String advisorName) {
+        this.advisorName = advisorName;
     }
 
     public void setTargetName(String targetName) {

@@ -1,7 +1,7 @@
 package com.minis.web.servlet.adapter.convert.editor;
 
-import com.minis.web.servlet.adapter.util.NumberUtils;
-import com.minis.web.servlet.adapter.util.StringUtils;
+import com.minis.util.NumberUtils;
+import com.minis.util.StringUtils;
 
 import java.text.NumberFormat;
 

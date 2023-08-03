@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.minis.web.servlet.adapter.util;
+package com.minis.util;
 
 import java.lang.reflect.*;
 import java.util.ArrayList;

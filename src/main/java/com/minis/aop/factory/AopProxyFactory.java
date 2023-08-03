@@ -1,6 +1,6 @@
 package com.minis.aop.factory;
 
-import com.minis.aop.advisor.Advisor;
+import com.minis.aop.advisor.PointcutAdvisor;
 import com.minis.aop.proxy.AopProxy;
 
 /**
@@ -14,5 +14,5 @@ public interface AopProxyFactory {
      * @param advisor 增强器
      * @return AOP 代理
      */
-    AopProxy createAopProxy(Object target, Advisor advisor);
+    AopProxy createAopProxy(Object target, PointcutAdvisor advisor);
 }

@@ -1,7 +1,7 @@
 package com.test.config.mvc;
 
 import com.minis.web.servlet.adapter.convert.editor.PropertyEditor;
-import com.minis.web.servlet.adapter.util.StringUtils;
+import com.minis.util.StringUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

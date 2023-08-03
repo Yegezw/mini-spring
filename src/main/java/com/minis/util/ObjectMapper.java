@@ -1,4 +1,4 @@
-package com.minis.web.servlet.adapter.util;
+package com.minis.util;
 
 /**
  * 对象映射器

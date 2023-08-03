@@ -51,7 +51,9 @@ public class TestController {
     @ResponseBody
     @RequestMapping("/testAop")
     public String doTestAop(HttpServletRequest request, HttpServletResponse response) {
-        action.doAction();
+        action.doAction();    // 符合 do*, 会被增强
+        action.doSomething(); // 符合 do*, 会被增强
+        action.test();        // 不符合 do*, 不会被增强
         return "test aop, hello world!";
     }
 }

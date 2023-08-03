@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.minis.web.servlet.adapter.util;
+package com.minis.util;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

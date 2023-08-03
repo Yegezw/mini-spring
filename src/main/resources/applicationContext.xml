@@ -47,9 +47,9 @@
     <bean id="webBindingInitializer" class="com.test.config.mvc.DateInitializer"/>
     <!--messageConverter-->
     <bean id="messageConverter" class="com.minis.web.servlet.adapter.convert.http.DefaultHttpMessageConverter">
-        <property type="com.minis.web.servlet.adapter.util.ObjectMapper" name="objectMapper" ref="objectMapper"/>
+        <property type="com.minis.util.ObjectMapper" name="objectMapper" ref="objectMapper"/>
     </bean>
-    <bean id="objectMapper" class="com.minis.web.servlet.adapter.util.DefaultObjectMapper">
+    <bean id="objectMapper" class="com.minis.util.DefaultObjectMapper">
         <property type="String" name="dateFormat" value="yyyy/MM/dd"/>
         <property type="String" name="decimalFormat" value="###.##"/>
     </bean>
@@ -79,11 +79,15 @@
     <!--ProxyFactoryBean: action-->
     <bean id="action" class="com.minis.aop.ProxyFactoryBean">
         <property type="java.lang.Object" name="target" ref="realAction"/>
-        <!--只能配置 1 个增强操作: 修改 value = myInterceptor / myBeforeAdvice / myAfterAdvice-->
-        <property type="String" name="interceptorName" value="myAfterAdvice"/>
+        <property type="String" name="advisorName" value="advisor"/>
     </bean>
     <bean id="realAction" class="com.test.aop.ActionImpl"/>
-    <!--以下 3 个增强操作, 在 action 中只能配置一个, 同时需要修改 action.interceptorName-->
+    <bean id="advisor" class="com.minis.aop.advisor.NameMatchMethodPointcutAdvisor">
+        <!--只能配置 1 个增强操作: 修改 ref = myInterceptor / myBeforeAdvice / myAfterAdvice-->
+        <property type="com.minis.aop.advice.Advice" name="advice" ref="myBeforeAdvice"/>
+        <property type="String" name="mappedName" value="do*"/>
+    </bean>
+    <!--以下 3 个增强操作, 在 advisor 中只能配置一个, 同时需要修改 advisor.advice-->
     <bean id="myInterceptor"  class="com.test.aop.MyInterceptor"/>
     <bean id="myBeforeAdvice" class="com.test.aop.MyBeforeAdvice"/>
     <bean id="myAfterAdvice"  class="com.test.aop.MyAfterAdvice"/>

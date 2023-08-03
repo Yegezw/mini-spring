@@ -1,6 +1,6 @@
 package com.minis.web.servlet.adapter.convert.http;
 
-import com.minis.web.servlet.adapter.util.ObjectMapper;
+import com.minis.util.ObjectMapper;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
