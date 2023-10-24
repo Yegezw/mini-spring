@@ -33,7 +33,12 @@ public class DefaultListableBeanFactory
 
         for (String beanName : super.beanDefinitionNames) {
             BeanDefinition beanDefinition = super.getBeanDefinition(beanName);
-            Class<?> clazz = beanDefinition.getClass();
+            Class<?> clazz;
+            try {
+                clazz = Class.forName(beanDefinition.className);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
             if (type.isAssignableFrom(clazz)) list.add(beanName);
         }
 

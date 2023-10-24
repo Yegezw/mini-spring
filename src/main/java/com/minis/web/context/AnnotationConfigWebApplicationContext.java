@@ -57,6 +57,12 @@ public class AnnotationConfigWebApplicationContext extends AbstractApplicationCo
         beanFactory.setParent(parentApplicationContext.getBeanFactory());
         loadBeanDefinitions(controllerNames);
 
+        System.out.println(
+                "1、设置 parentApplicationContext 和 servletContext\n" +
+                        "1、读取配置文件 -> 解析 Controller 类路径列表\n" +
+                        "1、创建 Controller 的 BeanDefinition, 注册给 BeanFactory"
+        );
+
         if (true) {
             try {
                 // Controller 的实例化在这里完成
@@ -134,22 +140,29 @@ public class AnnotationConfigWebApplicationContext extends AbstractApplicationCo
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory bf) {
+        System.out.println("2、postProcessBeanFactory(bf) 执行完成");
     }
 
     @Override
     public void registerBeanPostProcessors(ConfigurableListableBeanFactory bf) {
         beanFactory.addBeanPostProcessor(new AutowiredAnnotationBeanPostProcessor());
+
+        System.out.println("3、registerBeanPostProcessors(bf) 执行完成");
     }
 
     @Override
     public void initApplicationEventPublisher() {
         ApplicationEventPublisher aep = new SimpleApplicationEventPublisher();
         super.setApplicationEventPublisher(aep);
+
+        System.out.println("4、初始化应用事件发布者（被观察者）完成");
     }
 
     @Override
     public void onRefresh() {
         beanFactory.refresh();
+
+        System.out.println("5、刷新完成");
     }
 
     @Override
@@ -167,6 +180,8 @@ public class AnnotationConfigWebApplicationContext extends AbstractApplicationCo
                 super.getApplicationEventPublisher().addApplicationListener((ApplicationListener<?>) bean);
             }
         }
+
+        System.out.println("6、ApplicationListener 注入完成");
     }
 
     @Override
@@ -179,6 +194,8 @@ public class AnnotationConfigWebApplicationContext extends AbstractApplicationCo
     @Override
     public void publishEvent(ApplicationEvent event) {
         super.getApplicationEventPublisher().publishEvent(event);
+
+        System.out.println("7、结束刷新");
     }
 
     @Override

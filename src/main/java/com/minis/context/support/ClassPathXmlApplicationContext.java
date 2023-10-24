@@ -44,6 +44,8 @@ public class ClassPathXmlApplicationContext extends AbstractApplicationContext {
         XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
         reader.loadBeanDefinitions(resource);
 
+        System.out.println("1、读取配置文件, 解析 BeanDefinition, 注册给 BeanFactory");
+
         if (isRefresh) {
             try {
                 super.refresh();
@@ -91,7 +93,7 @@ public class ClassPathXmlApplicationContext extends AbstractApplicationContext {
             }
         }
 
-        System.out.println("BeanFactoryPostProcessor 完成实例化并注入");
+        System.out.println("2、BeanFactoryPostProcessor 完成实例化并注入 + 调用 postProcessBeanFactory(bf)");
     }
 
     @Override
@@ -117,18 +119,22 @@ public class ClassPathXmlApplicationContext extends AbstractApplicationContext {
             }
         }
 
-        System.out.println("BeanPostProcessor 完成实例化并注入");
+        System.out.println("3、BeanPostProcessor 完成实例化并注入");
     }
 
     @Override
     public void initApplicationEventPublisher() {
         ApplicationEventPublisher aep = new SimpleApplicationEventPublisher();
         super.setApplicationEventPublisher(aep);
+
+        System.out.println("4、初始化应用事件发布者（被观察者）完成");
     }
 
     @Override
     public void onRefresh() {
         beanFactory.refresh();
+
+        System.out.println("5、刷新完成");
     }
 
     @Override
@@ -147,12 +153,14 @@ public class ClassPathXmlApplicationContext extends AbstractApplicationContext {
             }
         }
 
-        System.out.println("ApplicationListener 注入完成");
+        System.out.println("6、ApplicationListener 注入完成");
     }
 
     @Override
     public void finishRefresh() {
         publishEvent(new ContextRefreshedEvent(this));
+
+        System.out.println("7、结束刷新");
     }
 
     // ========================================= ApplicationEventPublisher ========================================= //

@@ -43,6 +43,8 @@ public class ContextLoaderListener implements ServletContextListener {
      * <p>ServletContext 里有 XmlWebApplicationContext
      */
     private void initWebApplicationContext(ServletContext servletContext) {
+        System.out.println("------------------------- ContextLoaderListener 开始执行 -------------------------");
+
         String applicationContext = servletContext.getInitParameter(CONFIG_LOCATION_PARAM);
         System.out.println("父容器 XmlWebApplicationContext 配置文件: " + applicationContext); // applicationContext.xml
 
@@ -53,6 +55,6 @@ public class ContextLoaderListener implements ServletContextListener {
         // 把父容器 XmlWebApplicationContext, 添加到 ServletContext 中
         servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
 
-        System.out.println("ContextLoaderListener 执行完毕");
+        System.out.println("------------------------- ContextLoaderListener 执行完毕 -------------------------");
     }
 }

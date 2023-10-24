@@ -77,7 +77,7 @@ public class DispatcherServlet extends HttpServlet {
     private ViewResolver viewResolver;
 
     public DispatcherServlet() {
-        System.out.println("DispatcherServlet 实例化完成");
+        System.out.println("------------------------- DispatcherServlet 实例化完成 -------------------------");
     }
 
     /**
@@ -108,7 +108,7 @@ public class DispatcherServlet extends HttpServlet {
         // 然后进行 refresh(), Controller 的实例化在这里完成
         webApplicationContext = new AnnotationConfigWebApplicationContext(contextConfigLocation, parentApplicationContext);
         refresh();
-        System.out.println("DispatcherServlet 初始化完成");
+        System.out.println("------------------------- DispatcherServlet 初始化完成 -------------------------");
     }
 
     /**

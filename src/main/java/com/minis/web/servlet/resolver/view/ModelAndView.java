@@ -48,11 +48,9 @@ public class ModelAndView {
         addObject(modelName, modelObject);
     }
 
-
     public void setViewName(String viewName) {
         this.view = viewName;
     }
-
 
     public String getViewName() {
         return (view instanceof String ? (String) view : null);

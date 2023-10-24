@@ -14,7 +14,7 @@
     </bean>
 
     <bean id="cService" class="com.test.service.CService" init-method="init">
-<!--        <property type="com.test.service.AService" name="bbs" ref="aService"/>-->
+        <property type="com.test.service.AService" name="aService" ref="aService"/>
     </bean>
 
 </beans>
