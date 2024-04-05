@@ -2,12 +2,13 @@ package com.test.config.ioc;
 
 import com.minis.beans.config.BeansException;
 import com.minis.beans.factory.BeanFactory;
+import com.minis.beans.factory.BeanFactoryAware;
 import com.minis.beans.factory.postprocessor.bean.BeanPostProcessor;
 
 /**
  * Log Bean 后置通知处理器
  */
-public class LogBeanPostProcessor implements BeanPostProcessor {
+public class LogBeanPostProcessor implements BeanPostProcessor, BeanFactoryAware {
 
     private BeanFactory beanFactory;
 

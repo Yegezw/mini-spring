@@ -15,16 +15,12 @@ import com.minis.context.publisher.SimpleApplicationEventPublisher;
 import com.minis.core.resource.ClassPathXmlResource;
 import com.minis.core.resource.Resource;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * 类路径 XML 应用上下文
  */
 public class ClassPathXmlApplicationContext extends AbstractApplicationContext {
 
     private DefaultListableBeanFactory beanFactory;
-    private final List<BeanFactoryPostProcessor> beanFactoryPostProcessors = new ArrayList<>();
 
     public ClassPathXmlApplicationContext(String fileName) {
         this(fileName, true);

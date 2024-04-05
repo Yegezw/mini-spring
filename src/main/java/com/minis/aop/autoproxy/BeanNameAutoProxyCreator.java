@@ -7,13 +7,14 @@ import com.minis.aop.factory.DefaultAopProxyFactory;
 import com.minis.aop.proxy.AopProxy;
 import com.minis.beans.config.BeansException;
 import com.minis.beans.factory.BeanFactory;
+import com.minis.beans.factory.BeanFactoryAware;
 import com.minis.beans.factory.postprocessor.bean.BeanPostProcessor;
 import com.minis.util.PatternMatchUtils;
 
 /**
  * Bean 名称自动代理创建者
  */
-public class BeanNameAutoProxyCreator implements BeanPostProcessor {
+public class BeanNameAutoProxyCreator implements BeanPostProcessor, BeanFactoryAware {
 
     private String pattern;
     private BeanFactory beanFactory;

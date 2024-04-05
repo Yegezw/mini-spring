@@ -21,7 +21,7 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
 
     private Environment environment;
 
-    private final List<BeanFactoryPostProcessor> beanFactoryPostProcessors = new ArrayList<>();
+    protected final List<BeanFactoryPostProcessor> beanFactoryPostProcessors = new ArrayList<>();
     private long startupDate;
     private final AtomicBoolean active = new AtomicBoolean(); // 活跃的
     private final AtomicBoolean closed = new AtomicBoolean(); // 关闭的

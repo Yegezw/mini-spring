@@ -5,5 +5,8 @@ package com.minis.beans.factory;
  */
 public interface BeanFactoryAware {
 
+    /**
+     * 设置 Bean 工厂
+     */
     void setBeanFactory(BeanFactory beanFactory);
 }

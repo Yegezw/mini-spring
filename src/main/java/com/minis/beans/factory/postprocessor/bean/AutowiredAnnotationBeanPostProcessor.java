@@ -2,6 +2,7 @@ package com.minis.beans.factory.postprocessor.bean;
 
 import com.minis.beans.config.BeansException;
 import com.minis.beans.factory.BeanFactory;
+import com.minis.beans.factory.BeanFactoryAware;
 import com.minis.beans.factory.config.annotation.Autowired;
 
 import java.lang.reflect.Field;
@@ -9,7 +10,7 @@ import java.lang.reflect.Field;
 /**
  * 自动装配注解 Bean 后置通知处理器
  */
-public class AutowiredAnnotationBeanPostProcessor implements BeanPostProcessor {
+public class AutowiredAnnotationBeanPostProcessor implements BeanPostProcessor, BeanFactoryAware {
 
     private BeanFactory beanFactory;
 

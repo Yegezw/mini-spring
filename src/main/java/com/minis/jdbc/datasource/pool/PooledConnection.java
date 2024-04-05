@@ -12,6 +12,9 @@ import java.util.concurrent.Executor;
 public class PooledConnection implements Connection {
 
     private Connection connection;
+    /**
+     * 连接是否正在被使用
+     */
     private boolean active;
 
     public PooledConnection() {
