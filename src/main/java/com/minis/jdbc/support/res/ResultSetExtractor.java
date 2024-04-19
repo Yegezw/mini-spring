@@ -13,4 +13,3 @@ public interface ResultSetExtractor<T> {
 	 */
 	T extractData(ResultSet rs) throws SQLException;
 }
-

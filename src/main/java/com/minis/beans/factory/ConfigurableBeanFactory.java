@@ -21,4 +21,3 @@ public interface ConfigurableBeanFactory extends BeanFactory, SingletonBeanRegis
 
     String[] getDependenciesForBean(String beanName);
 }
-
