@@ -145,7 +145,9 @@ public class AnnotationConfigWebApplicationContext extends AbstractApplicationCo
 
     @Override
     public void registerBeanPostProcessors(ConfigurableListableBeanFactory bf) {
-        beanFactory.addBeanPostProcessor(new AutowiredAnnotationBeanPostProcessor());
+        AutowiredAnnotationBeanPostProcessor autowiredAnnotationBeanPostProcessor = new AutowiredAnnotationBeanPostProcessor();
+        autowiredAnnotationBeanPostProcessor.setBeanFactory(this);
+        beanFactory.addBeanPostProcessor(autowiredAnnotationBeanPostProcessor);
 
         System.out.println("3、registerBeanPostProcessors(bf) 执行完成");
     }
