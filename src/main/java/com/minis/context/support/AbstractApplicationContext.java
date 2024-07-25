@@ -65,14 +65,14 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
     public abstract void initApplicationEventPublisher();
 
     /**
-     * 注册监听器(观察者)
-     */
-    public abstract void registerListeners();
-
-    /**
      * 在刷新
      */
     public abstract void onRefresh();
+
+    /**
+     * 注册监听器(观察者)
+     */
+    public abstract void registerListeners();
 
     /**
      * 结束刷新
